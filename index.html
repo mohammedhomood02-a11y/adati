@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>عاداتي</title>
+<meta name="theme-color" content="#EEF2EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111918" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="عاداتي">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2EE; --surface:#FFFFFF; --ink:#1C2B2A; --muted:#5E6E6B; --line:#D5DDD8; --empty:#D3DAD5;
+  --lapis:#2B4C9B; --amber:#B97C12; --rose:#B4485A; --olive:#567529; --teal:#1F7A72;
+  --accent:var(--lapis);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111918; --surface:#1A2422; --ink:#E4ECE8; --muted:#97A7A2; --line:#2C3A37; --empty:#2F3D3A;
+    --lapis:#86A2EC; --amber:#E2A93F; --rose:#E07A8B; --olive:#9DC066; --teal:#4DBFB3;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111918; --surface:#1A2422; --ink:#E4ECE8; --muted:#97A7A2; --line:#2C3A37; --empty:#2F3D3A;
+  --lapis:#86A2EC; --amber:#E2A93F; --rose:#E07A8B; --olive:#9DC066; --teal:#4DBFB3;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;font-size:16px;line-height:1.6}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:640px;margin:0 auto;padding:28px 18px 120px}
+header h1{font-family:"Reem Kufi",Tahoma,sans-serif;font-weight:700;font-size:2.4rem;line-height:1.15;margin:0}
+.date{color:var(--muted);margin:4px 0 0}
+.summary{display:flex;align-items:center;gap:14px;margin:22px 0 26px}
+.thread{flex:1;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.thread span{width:14px;height:14px;border-radius:50%;background:var(--empty);transition:background .3s}
+.thread span.on{background:var(--ink)}
+.count{font-family:"Reem Kufi",Tahoma,sans-serif;font-size:1.15rem;white-space:nowrap}
+
+.list{display:flex;flex-direction:column;gap:2px}
+.habit{display:grid;grid-template-columns:auto 1fr auto;gap:4px 14px;align-items:center;padding:16px 4px;border-bottom:1px solid var(--line)}
+.habit.off{opacity:.55}
+.check{width:52px;height:52px;border-radius:50%;border:2.5px solid var(--c);background:transparent;display:grid;place-items:center;font-size:1.5rem;cursor:pointer;transition:background .2s,transform .15s;grid-row:span 2}
+.check:active{transform:scale(.92)}
+.check.done{background:var(--c);color:var(--surface)}
+.check.done .ico{display:none}
+.check .tick{display:none}
+.check.done .tick{display:block}
+.check:disabled{cursor:default;border-style:dashed}
+.name{font-weight:600;font-size:1.08rem;margin:0;overflow-wrap:anywhere}
+.meta{color:var(--muted);font-size:.86rem;display:flex;gap:12px;flex-wrap:wrap}
+.edit{background:none;border:none;color:var(--muted);cursor:pointer;padding:8px;border-radius:8px;grid-row:span 2;font-size:1.2rem}
+.edit:hover{background:var(--line)}
+.beads{grid-column:2 / 3;display:flex;gap:4px;align-items:center;margin-top:6px;overflow-x:auto;padding-bottom:2px}
+.bead{width:15px;height:15px;flex:none;border-radius:50%;border:2px solid var(--empty);background:transparent;padding:0;cursor:pointer}
+.bead.done{background:var(--c);border-color:var(--c)}
+.bead.off{width:6px;height:6px;border:none;background:var(--empty);cursor:default;margin:0 4px}
+.bead.today{border-color:var(--c)}
+.bead.today.done{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--c)}
+
+.empty{padding:40px 8px;text-align:center;color:var(--muted)}
+.empty strong{display:block;color:var(--ink);font-family:"Reem Kufi",Tahoma,sans-serif;font-size:1.3rem;margin-bottom:6px}
+
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.ghost{background:none;border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;color:var(--muted);font-size:.9rem}
+.ghost:hover{color:var(--ink);border-color:var(--muted)}
+
+.add{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);border:none;border-radius:999px;padding:14px 28px;font-weight:600;font-size:1rem;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+
+dialog{border:none;border-radius:18px;padding:0;background:var(--surface);color:var(--ink);width:min(520px,calc(100% - 24px));max-height:calc(100% - 40px)}
+dialog::backdrop{background:rgba(10,20,18,.45)}
+form{padding:22px 20px 18px;display:flex;flex-direction:column;gap:18px}
+form h2{font-family:"Reem Kufi",Tahoma,sans-serif;margin:0;font-size:1.4rem}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:500}
+input[type=text],input[type=time]{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;width:100%}
+fieldset{border:none;padding:0;margin:0}
+legend{font-weight:500;margin-bottom:8px;padding:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips label{border:1px solid var(--line);border-radius:10px;padding:6px 10px;cursor:pointer;min-width:42px;text-align:center}
+.chips input:checked + span{font-weight:600}
+.chips label:has(input:checked){background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chips label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.swatch{width:34px;height:34px;border-radius:50%;padding:0!important;min-width:0!important;border:3px solid transparent!important}
+.chips label.swatch:has(input:checked){border-color:var(--ink)!important;box-shadow:inset 0 0 0 3px var(--surface)}
+.icons label{font-size:1.3rem;padding:4px 8px}
+.chips.icons label:has(input:checked){background:var(--line);color:var(--ink);border-color:var(--ink)}
+.row{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.primary{background:var(--ink);color:var(--surface);border:none;border-radius:10px;padding:10px 22px;font-weight:600;cursor:pointer}
+.danger{background:none;border:none;color:var(--rose);cursor:pointer;padding:10px 4px}
+.hint{color:var(--muted);font-size:.84rem;margin:0}
+
+.toast{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-150%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;max-width:calc(100% - 24px);transition:transform .3s;z-index:10;display:flex;gap:12px;align-items:center}
+.toast.show{transform:translate(-50%,0)}
+.toast button{background:var(--bg);color:var(--ink);border:none;border-radius:8px;padding:4px 12px;cursor:pointer;font-weight:600}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>عاداتي</h1>
+    <p class="date" id="date"></p>
+  </header>
+  <div class="summary" aria-live="polite">
+    <div class="thread" id="thread"></div>
+    <div class="count" id="count"></div>
+  </div>
+  <main class="list" id="list"></main>
+  <div class="tools">
+    <button class="ghost" id="notifBtn" type="button">تفعيل إشعارات التذكير</button>
+    <button class="ghost" id="backupBtn" type="button">تنزيل نسخة احتياطية</button>
+    <button class="ghost" id="importBtn" type="button">استعادة من نسخة</button>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
+    <button class="ghost" id="installBtn" type="button" hidden>تثبيت التطبيق</button>
+  </div>
+</div>
+<button class="add" id="addBtn" type="button">+ عادة جديدة</button>
+
+<dialog id="dlg">
+  <form id="form" method="dialog">
+    <h2 id="dlgTitle">عادة جديدة</h2>
+    <label class="f">اسم العادة
+      <input type="text" name="name" required maxlength="60" placeholder="مثال: قراءة ٢٠ صفحة">
+    </label>
+    <fieldset>
+      <legend>الرمز</legend>
+      <div class="chips icons" id="iconChips"></div>
+    </fieldset>
+    <fieldset>
+      <legend>اللون</legend>
+      <div class="chips" id="colorChips"></div>
+    </fieldset>
+    <fieldset>
+      <legend>أيام التكرار</legend>
+      <div class="chips" id="dayChips"></div>
+    </fieldset>
+    <label class="f">وقت التذكير (اختياري)
+      <input type="time" name="time">
+    </label>
+    <p class="hint">يظهر التذكير عندما تكون الصفحة مفتوحة، وكإشعار إذا فعّلت الإشعارات.</p>
+    <div class="row">
+      <button class="danger" type="button" id="delBtn" hidden>حذف العادة</button>
+      <div style="display:flex;gap:8px;margin-inline-start:auto">
+        <button class="ghost" type="button" id="cancelBtn">إلغاء</button>
+        <button class="primary" type="submit">حفظ</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status"><span id="toastText"></span><button type="button" id="toastAct" hidden></button></div>
+
+<script>
+const DAY_NAMES=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const DAY_ORDER=[6,0,1,2,3,4,5];
+const ICONS=["📖","💧","🏃","🧘","🕌","🥗","😴","✍️","🧪","💊","🚭","📵"];
+const COLORS=["lapis","teal","olive","amber","rose"];
+const LS="habit-beads-v1";
+const pad=n=>String(n).padStart(2,"0");
+const keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const nf=new Intl.NumberFormat("ar-IQ");
+const $=id=>document.getElementById(id);
+
+let state={habits:[],log:{}};
+try{const s=localStorage.getItem(LS);if(s)state=JSON.parse(s)}catch(e){}
+if(!state.habits)state.habits=[];if(!state.log)state.log={};
+
+/* ---------- persistence ---------- */
+function prune(){const cut=keyOf(addDays(new Date(),-400));for(const k of Object.keys(state.log))if(k<cut)delete state.log[k]}
+function persist(){
+  prune();
+  try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){toast("تعذّر الحفظ: مساحة التخزين ممتلئة")}
+}
+if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(()=>{})}
+
+/* ---------- logic ---------- */
+const isDone=(h,k)=>(state.log[k]||[]).includes(h.id);
+const scheduled=(h,d)=>h.days.includes(d.getDay());
+function toggle(h,k){
+  const arr=state.log[k]||(state.log[k]=[]);
+  const i=arr.indexOf(h.id);
+  if(i>=0)arr.splice(i,1);else arr.push(h.id);
+  if(!arr.length)delete state.log[k];
+  persist();render();
+}
+function streak(h){
+  let d=new Date(),n=0;
+  if(scheduled(h,d)&&!isDone(h,keyOf(d)))d=addDays(d,-1);
+  for(let i=0;i<730;i++){
+    if(scheduled(h,d)){if(isDone(h,keyOf(d)))n++;else break}
+    d=addDays(d,-1);
+  }
+  return n;
+}
+function rate30(h){
+  let s=0,c=0,d=new Date();
+  const start=h.created?new Date(h.created):addDays(d,-29);
+  for(let i=0;i<30;i++){const x=addDays(d,-i);if(x<new Date(start.toDateString()))break;if(scheduled(h,x)){s++;if(isDone(h,keyOf(x)))c++}}
+  return s?Math.round(c/s*100):null;
+}
+
+/* ---------- render ---------- */
+function render(){
+  const today=new Date(),tk=keyOf(today);
+  $("date").textContent=today.toLocaleDateString("ar-IQ",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  const todays=state.habits.filter(h=>scheduled(h,today));
+  const done=todays.filter(h=>isDone(h,tk)).length;
+  $("thread").innerHTML=todays.map((h,i)=>`<span class="${i<done?"on":""}"></span>`).join("");
+  $("count").textContent=todays.length?`${nf.format(done)} من ${nf.format(todays.length)}`:"";
+
+  const list=$("list");
+  if(!state.habits.length){
+    list.innerHTML=`<div class="empty"><strong>ابدأ بأول عادة</strong>أضف عادة، حدّد أيامها ووقت تذكيرها، ثم علّمها كل يوم لتكتمل حبّات مسبحتك.</div>`;
+    return;
+  }
+  const sorted=[...state.habits].sort((a,b)=>(scheduled(b,today)-scheduled(a,today))||((a.time||"99")>(b.time||"99")?1:-1));
+  list.innerHTML="";
+  for(const h of sorted){
+    const on=scheduled(h,today),dn=isDone(h,tk),st=streak(h),r=rate30(h);
+    const el=document.createElement("div");
+    el.className="habit"+(on?"":" off");
+    el.style.setProperty("--c",`var(--${h.color||"lapis"})`);
+    let beads="";
+    for(let i=13;i>=0;i--){
+      const d=addDays(today,-i),k=keyOf(d);
+      const sch=scheduled(h,d),bd=isDone(h,k);
+      const label=`${DAY_NAMES[d.getDay()]} ${d.toLocaleDateString("ar-IQ",{day:"numeric",month:"long"})}: ${bd?"منجزة":sch?"غير منجزة":"ليست ضمن الأيام"}`;
+      if(!sch&&!bd)beads+=`<span class="bead off" title="${label}"></span>`;
+      else beads+=`<button type="button" class="bead${bd?" done":""}${i===0?" today":""}" data-k="${k}" aria-label="${label}" title="${label}"></button>`;
+    }
+    el.innerHTML=`
+      <button type="button" class="check${dn?" done":""}" ${on?"":"disabled"} aria-pressed="${dn}" aria-label="${dn?"إلغاء إنجاز":"إنجاز"} ${esc(h.name)}">
+        <span class="ico">${h.icon||"•"}</span><span class="tick">✓</span></button>
+      <p class="name">${esc(h.name)}</p>
+      <button type="button" class="edit" aria-label="تعديل ${esc(h.name)}">⋯</button>
+      <div class="meta">
+        ${on?"":"<span>ليست اليوم</span>"}
+        ${h.time?`<span>⏰ ${fmtTime(h.time)}</span>`:""}
+        <span>🔥 ${nf.format(st)} ${st===1?"يوم":"أيام"} متتالية</span>
+        ${r!==null?`<span>${nf.format(r)}٪ خلال ٣٠ يوماً</span>`:""}
+      </div>
+      <div class="beads">${beads}</div>`;
+    el.querySelector(".check").onclick=()=>{if(on)toggle(h,tk)};
+    el.querySelector(".edit").onclick=()=>openDlg(h);
+    el.querySelectorAll("button.bead").forEach(b=>b.onclick=()=>toggle(h,b.dataset.k));
+    list.appendChild(el);
+  }
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function fmtTime(t){const [H,M]=t.split(":").map(Number);const d=new Date();d.setHours(H,M);return d.toLocaleTimeString("ar-IQ",{hour:"numeric",minute:"2-digit"})}
+
+/* ---------- dialog ---------- */
+let editing=null;
+function buildChips(){
+  $("iconChips").innerHTML=ICONS.map((ic,i)=>`<label><input type="radio" name="icon" value="${ic}" ${i===0?"checked":""}><span>${ic}</span></label>`).join("");
+  $("colorChips").innerHTML=COLORS.map((c,i)=>`<label class="swatch" style="background:var(--${c})" title="${c}"><input type="radio" name="color" value="${c}" ${i===0?"checked":""} aria-label="لون ${i+1}"></label>`).join("");
+  $("dayChips").innerHTML=DAY_ORDER.map(d=>`<label><input type="checkbox" name="days" value="${d}" checked><span>${DAY_NAMES[d]}</span></label>`).join("");
+}
+function openDlg(h){
+  editing=h||null;
+  const f=$("form");f.reset();
+  $("dlgTitle").textContent=h?"تعديل العادة":"عادة جديدة";
+  $("delBtn").hidden=!h;
+  if(h){
+    f.name.value=h.name;f.time.value=h.time||"";
+    f.querySelectorAll("[name=icon]").forEach(i=>i.checked=i.value===h.icon);
+    f.querySelectorAll("[name=color]").forEach(i=>i.checked=i.value===h.color);
+    f.querySelectorAll("[name=days]").forEach(i=>i.checked=h.days.includes(+i.value));
+  }
+  $("dlg").showModal();
+}
+$("form").addEventListener("submit",e=>{
+  e.preventDefault();
+  const f=e.target;
+  const days=[...f.querySelectorAll("[name=days]:checked")].map(i=>+i.value);
+  if(!days.length){toast("اختر يوماً واحداً على الأقل");return}
+  const data={name:f.name.value.trim(),icon:f.querySelector("[name=icon]:checked")?.value||"•",color:f.querySelector("[name=color]:checked")?.value||"lapis",days,time:f.time.value||""};
+  if(!data.name)return;
+  if(editing)Object.assign(editing,data);
+  else state.habits.push({id:"h"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),created:keyOf(new Date()),...data});
+  $("dlg").close();persist();render();
+  toast(editing?"حُفظت التعديلات":"أُضيفت العادة");
+});
+$("cancelBtn").onclick=()=>$("dlg").close();
+$("delBtn").onclick=()=>{
+  if(!editing)return;
+  if(!confirm(`حذف «${editing.name}» وسجلّها؟`))return;
+  const id=editing.id;
+  state.habits=state.habits.filter(h=>h.id!==id);
+  for(const k of Object.keys(state.log)){state.log[k]=state.log[k].filter(x=>x!==id);if(!state.log[k].length)delete state.log[k]}
+  $("dlg").close();persist();render();toast("حُذفت العادة");
+};
+$("addBtn").onclick=()=>openDlg(null);
+
+/* ---------- toast ---------- */
+let tTimer;
+function toast(msg,act){
+  $("toastText").textContent=msg;
+  const b=$("toastAct");
+  if(act){b.hidden=false;b.textContent=act.label;b.onclick=()=>{act.fn();hideToast()}}else b.hidden=true;
+  $("toast").classList.add("show");clearTimeout(tTimer);
+  tTimer=setTimeout(hideToast,act?12000:2600);
+}
+function hideToast(){$("toast").classList.remove("show")}
+
+/* ---------- reminders ---------- */
+const notified=new Set();
+function notifSupported(){return "Notification" in window}
+function updateNotifBtn(){
+  const b=$("notifBtn");
+  if(!notifSupported()){b.hidden=true;return}
+  if(Notification.permission==="granted"){b.textContent="الإشعارات مفعّلة";b.disabled=true}
+  else if(Notification.permission==="denied"){b.textContent="الإشعارات محظورة في المتصفح";b.disabled=true}
+}
+$("notifBtn").onclick=async()=>{
+  try{const p=await Notification.requestPermission();updateNotifBtn();toast(p==="granted"?"سيصلك إشعار عند موعد كل عادة":"ستظهر التذكيرات داخل الصفحة فقط")}
+  catch(e){toast("المتصفح لا يسمح بالإشعارات هنا، ستظهر التذكيرات داخل الصفحة")}
+};
+let swReg=null;
+async function showNotif(body,tag){
+  if(!notifSupported()||Notification.permission!=="granted")return;
+  try{
+    const reg=swReg||(navigator.serviceWorker&&await navigator.serviceWorker.ready);
+    if(reg){await reg.showNotification("تذكير بعادة",{body,tag,icon:"icons/icon-192.png",badge:"icons/icon-192.png",lang:"ar",dir:"rtl"});return}
+  }catch(e){}
+  try{new Notification("تذكير بعادة",{body,tag})}catch(e){}
+}
+function checkReminders(){
+  const now=new Date(),tk=keyOf(now),mins=now.getHours()*60+now.getMinutes();
+  for(const h of state.habits){
+    if(!h.time||!scheduled(h,now)||isDone(h,tk))continue;
+    const [H,M]=h.time.split(":").map(Number),t=H*60+M;
+    const id=tk+h.id;
+    if(mins>=t&&mins-t<=60&&!notified.has(id)){
+      notified.add(id);
+      toast(`${h.icon} حان وقت: ${h.name}`,{label:"أنجزتها",fn:()=>{if(!isDone(h,tk))toggle(h,tk)}});
+      showNotif(`${h.icon} ${h.name}`,id);
+    }
+  }
+}
+
+/* ---------- backup ---------- */
+$("backupBtn").onclick=()=>{
+  const data=JSON.stringify(state,null,2),name=`habits-backup-${keyOf(new Date())}.json`;
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:"application/json"}));a.download=name;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=async e=>{
+  const f=e.target.files[0];e.target.value="";if(!f)return;
+  try{
+    const d=JSON.parse(await f.text());
+    if(!Array.isArray(d.habits)||typeof d.log!=="object")throw 0;
+    if(state.habits.length&&!confirm("ستُستبدل عاداتك الحالية بمحتوى النسخة. متابعة؟"))return;
+    state={habits:d.habits,log:d.log||{}};persist();render();toast(`استُعيدت ${nf.format(state.habits.length)} عادة`);
+  }catch(err){toast("الملف ليس نسخة احتياطية صالحة من عاداتي")}
+};
+
+/* ---------- install ---------- */
+let deferredPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBtn").hidden=false});
+$("installBtn").onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$("installBtn").hidden=true};
+window.addEventListener("appinstalled",()=>{$("installBtn").hidden=true;toast("ثُبّت التطبيق")});
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").then(r=>{swReg=r}).catch(()=>{}));
+}
+
+/* ---------- start ---------- */
+buildChips();updateNotifBtn();render();
+checkReminders();setInterval(checkReminders,30000);
+let lastDay=keyOf(new Date());
+setInterval(()=>{const k=keyOf(new Date());if(k!==lastDay){lastDay=k;render()}},60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){render();checkReminders()}});
+</script>
+</body>
+</html>
