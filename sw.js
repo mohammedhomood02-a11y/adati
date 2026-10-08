@@ -1,5 +1,5 @@
-const VERSION = "adati-v1";
-const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
+const VERSION = "adati-v3";
+const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192-v3.png", "icons/icon-512-v3.png", "icons/apple-touch-icon-v3.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

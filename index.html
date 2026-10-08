@@ -7,8 +7,8 @@
 <meta name="theme-color" content="#EEF2EE" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111918" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png" type="image/png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192-v3.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-v3.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="عاداتي">
@@ -19,7 +19,7 @@
 <style>
 :root{
   --bg:#EEF2EE; --surface:#FFFFFF; --ink:#1C2B2A; --muted:#5E6E6B; --line:#D5DDD8; --empty:#D3DAD5;
-  --lapis:#2B4C9B; --amber:#B97C12; --rose:#B4485A; --olive:#567529; --teal:#1F7A72;
+  --lapis:#2B4C9B; --amber:#B97C12; --rose:#B4485A; --olive:#567529; --teal:#1F7A72; --warn:#B4485A;
   --accent:var(--lapis);
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -28,98 +28,122 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#111918; --surface:#1A2422; --ink:#E4ECE8; --muted:#97A7A2; --line:#2C3A37; --empty:#2F3D3A;
-    --lapis:#86A2EC; --amber:#E2A93F; --rose:#E07A8B; --olive:#9DC066; --teal:#4DBFB3;
+    --lapis:#86A2EC; --amber:#E2A93F; --rose:#E07A8B; --olive:#9DC066; --teal:#4DBFB3; --warn:#E07A8B;
   }
 }
 :root[data-theme="dark"]{
   --bg:#111918; --surface:#1A2422; --ink:#E4ECE8; --muted:#97A7A2; --line:#2C3A37; --empty:#2F3D3A;
-  --lapis:#86A2EC; --amber:#E2A93F; --rose:#E07A8B; --olive:#9DC066; --teal:#4DBFB3;
+  --lapis:#86A2EC; --amber:#E2A93F; --rose:#E07A8B; --olive:#9DC066; --teal:#4DBFB3; --warn:#E07A8B;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;font-size:16px;line-height:1.6}
-button,input{font:inherit;color:inherit}
+button,input,select{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.wrap{max-width:640px;margin:0 auto;padding:28px 18px 120px}
-header h1{font-family:"Reem Kufi",Tahoma,sans-serif;font-weight:700;font-size:2.4rem;line-height:1.15;margin:0}
-.date{color:var(--muted);margin:4px 0 0}
-.summary{display:flex;align-items:center;gap:14px;margin:22px 0 26px}
-.thread{flex:1;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.thread span{width:14px;height:14px;border-radius:50%;background:var(--empty);transition:background .3s}
-.thread span.on{background:var(--ink)}
-.count{font-family:"Reem Kufi",Tahoma,sans-serif;font-size:1.15rem;white-space:nowrap}
+.wrap{max-width:640px;margin:0 auto;padding:24px 18px 120px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+header h1{font-family:"Reem Kufi",Tahoma,sans-serif;font-weight:700;font-size:2.2rem;line-height:1.15;margin:0}
+.date{color:var(--muted);margin:4px 0 0;font-size:.92rem}
+.score{text-align:left}
+.score b{display:block;font-family:"Reem Kufi",Tahoma,sans-serif;font-size:2.4rem;line-height:1}
+.score span{color:var(--muted);font-size:.8rem}
+.areas{display:grid;grid-template-columns:auto 1fr auto;gap:8px 12px;align-items:center;margin:20px 0 8px;font-size:.9rem}
+.bar{height:8px;border-radius:99px;background:var(--empty);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--c);border-radius:99px;transition:width .4s}
+.areas .pct{color:var(--muted);font-variant-numeric:tabular-nums;min-width:3ch}
 
-.list{display:flex;flex-direction:column;gap:2px}
-.habit{display:grid;grid-template-columns:auto 1fr auto;gap:4px 14px;align-items:center;padding:16px 4px;border-bottom:1px solid var(--line)}
+h2.sec{font-family:"Reem Kufi",Tahoma,sans-serif;font-size:1.1rem;margin:28px 0 2px;color:var(--c);display:flex;align-items:center;gap:8px}
+h2.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+.habit{display:grid;grid-template-columns:auto 1fr auto;gap:2px 14px;align-items:center;padding:14px 2px;border-bottom:1px solid var(--line)}
 .habit.off{opacity:.55}
-.check{width:52px;height:52px;border-radius:50%;border:2.5px solid var(--c);background:transparent;display:grid;place-items:center;font-size:1.5rem;cursor:pointer;transition:background .2s,transform .15s;grid-row:span 2}
+.check{width:52px;height:52px;border-radius:50%;border:2.5px solid var(--c);background:transparent;display:grid;place-items:center;font-size:1.45rem;cursor:pointer;transition:background .2s,transform .15s;grid-row:span 3;position:relative}
 .check:active{transform:scale(.92)}
-.check.done{background:var(--c);color:var(--surface)}
-.check.done .ico{display:none}
-.check .tick{display:none}
-.check.done .tick{display:block}
+.check.lv-target,.check.lv-excellent{background:var(--c)}
+.check.lv-excellent{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--c)}
+.check.lv-min{background:radial-gradient(circle,var(--c) 0 38%,transparent 40%)}
+.check.lv-over{border-color:var(--warn);border-style:dashed}
+.check.lv-partial{border-style:dashed}
 .check:disabled{cursor:default;border-style:dashed}
-.name{font-weight:600;font-size:1.08rem;margin:0;overflow-wrap:anywhere}
-.meta{color:var(--muted);font-size:.86rem;display:flex;gap:12px;flex-wrap:wrap}
-.edit{background:none;border:none;color:var(--muted);cursor:pointer;padding:8px;border-radius:8px;grid-row:span 2;font-size:1.2rem}
+.name{font-weight:600;font-size:1.05rem;margin:0;overflow-wrap:anywhere}
+.val{font-size:.92rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{font-size:.75rem;padding:1px 8px;border-radius:99px;background:var(--line);color:var(--ink)}
+.badge.excellent,.badge.target{background:var(--c);color:var(--surface)}
+.badge.over{background:var(--warn);color:var(--surface)}
+.meta{color:var(--muted);font-size:.8rem;display:flex;gap:10px;flex-wrap:wrap}
+.edit{background:none;border:none;color:var(--muted);cursor:pointer;padding:8px;border-radius:8px;grid-row:span 3;font-size:1.2rem}
 .edit:hover{background:var(--line)}
-.beads{grid-column:2 / 3;display:flex;gap:4px;align-items:center;margin-top:6px;overflow-x:auto;padding-bottom:2px}
-.bead{width:15px;height:15px;flex:none;border-radius:50%;border:2px solid var(--empty);background:transparent;padding:0;cursor:pointer}
-.bead.done{background:var(--c);border-color:var(--c)}
-.bead.off{width:6px;height:6px;border:none;background:var(--empty);cursor:default;margin:0 4px}
-.bead.today{border-color:var(--c)}
-.bead.today.done{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--c)}
+.beads{grid-column:2 / 4;display:flex;gap:3px;align-items:center;margin-top:6px;overflow-x:auto;padding-bottom:2px}
+.bead{width:13px;height:13px;flex:none;border-radius:50%;border:2px solid var(--empty);background:transparent;padding:0;cursor:pointer}
+.bead.lv-target,.bead.lv-excellent{background:var(--c);border-color:var(--c)}
+.bead.lv-excellent{box-shadow:0 0 0 1.5px var(--bg),0 0 0 3px var(--c)}
+.bead.lv-min{border-color:var(--c);background:radial-gradient(circle,var(--c) 0 30%,transparent 34%)}
+.bead.lv-partial{border-color:var(--c);border-style:dotted}
+.bead.lv-over{border-color:var(--warn);background:radial-gradient(circle,var(--warn) 0 30%,transparent 34%)}
+.bead.off{width:6px;height:6px;border:none;background:var(--empty);margin:0 4px}
+.bead.today:not(.lv-target):not(.lv-excellent){border-color:var(--c)}
 
-.empty{padding:40px 8px;text-align:center;color:var(--muted)}
+.empty{padding:36px 8px;text-align:center;color:var(--muted)}
 .empty strong{display:block;color:var(--ink);font-family:"Reem Kufi",Tahoma,sans-serif;font-size:1.3rem;margin-bottom:6px}
-
-.tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
-.ghost{background:none;border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;color:var(--muted);font-size:.9rem}
+.empty .primary{margin-top:16px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:28px}
+.ghost{background:none;border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;color:var(--muted);font-size:.88rem}
 .ghost:hover{color:var(--ink);border-color:var(--muted)}
-
 .add{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);border:none;border-radius:999px;padding:14px 28px;font-weight:600;font-size:1rem;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.18)}
 
 dialog{border:none;border-radius:18px;padding:0;background:var(--surface);color:var(--ink);width:min(520px,calc(100% - 24px));max-height:calc(100% - 40px)}
 dialog::backdrop{background:rgba(10,20,18,.45)}
-form{padding:22px 20px 18px;display:flex;flex-direction:column;gap:18px}
-form h2{font-family:"Reem Kufi",Tahoma,sans-serif;margin:0;font-size:1.4rem}
-label.f{display:flex;flex-direction:column;gap:6px;font-weight:500}
-input[type=text],input[type=time]{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;width:100%}
+form{padding:22px 20px 18px;display:flex;flex-direction:column;gap:16px}
+form h3{font-family:"Reem Kufi",Tahoma,sans-serif;margin:0;font-size:1.35rem}
+.sub{color:var(--muted);font-size:.86rem;margin:-10px 0 0}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:500;flex:1;min-width:0}
+input[type=text],input[type=time],select{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;width:100%}
+.grid3{display:flex;gap:10px}
+.grid3 label.f{font-size:.85rem}
 fieldset{border:none;padding:0;margin:0}
 legend{font-weight:500;margin-bottom:8px;padding:0}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips input{position:absolute;opacity:0;pointer-events:none}
-.chips label{border:1px solid var(--line);border-radius:10px;padding:6px 10px;cursor:pointer;min-width:42px;text-align:center}
-.chips input:checked + span{font-weight:600}
+.chips label{border:1px solid var(--line);border-radius:10px;padding:6px 10px;cursor:pointer;min-width:42px;text-align:center;font-size:.92rem}
 .chips label:has(input:checked){background:var(--ink);color:var(--surface);border-color:var(--ink)}
 .chips label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
-.swatch{width:34px;height:34px;border-radius:50%;padding:0!important;min-width:0!important;border:3px solid transparent!important}
-.chips label.swatch:has(input:checked){border-color:var(--ink)!important;box-shadow:inset 0 0 0 3px var(--surface)}
-.icons label{font-size:1.3rem;padding:4px 8px}
+.icons label{font-size:1.25rem;padding:4px 8px}
 .chips.icons label:has(input:checked){background:var(--line);color:var(--ink);border-color:var(--ink)}
 .row{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
 .primary{background:var(--ink);color:var(--surface);border:none;border-radius:10px;padding:10px 22px;font-weight:600;cursor:pointer}
-.danger{background:none;border:none;color:var(--rose);cursor:pointer;padding:10px 4px}
-.hint{color:var(--muted);font-size:.84rem;margin:0}
+.danger{background:none;border:none;color:var(--warn);cursor:pointer;padding:10px 4px}
+.hint{color:var(--muted);font-size:.82rem;margin:0}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-size:1.5rem;cursor:pointer;flex:none}
+.stepper input{text-align:center;font-size:1.8rem;font-family:"Reem Kufi",Tahoma,sans-serif;padding:6px}
+.unitlbl{color:var(--muted);white-space:nowrap}
+.quick{display:flex;gap:6px;flex-wrap:wrap}
+.quick button{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:6px 10px;cursor:pointer;font-size:.86rem}
+.preset{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.preset input{margin-top:6px;width:18px;height:18px;flex:none;accent-color:var(--ink)}
+.preset small{display:block;color:var(--muted)}
+.preset.exists{opacity:.5;cursor:default}
+.plist{max-height:52vh;overflow-y:auto}
 
-.toast{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-150%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;max-width:calc(100% - 24px);transition:transform .3s;z-index:10;display:flex;gap:12px;align-items:center}
+.toast{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-160%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;max-width:calc(100% - 24px);transition:transform .3s;z-index:10;display:flex;gap:12px;align-items:center}
 .toast.show{transform:translate(-50%,0)}
 .toast button{background:var(--bg);color:var(--ink);border:none;border-radius:8px;padding:4px 12px;cursor:pointer;font-weight:600}
+[hidden]{display:none!important}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>عاداتي</h1>
-    <p class="date" id="date"></p>
+    <div>
+      <h1>عاداتي</h1>
+      <p class="date" id="date"></p>
+    </div>
+    <div class="score" id="score" hidden><b id="scoreNum"></b><span>نتيجة اليوم</span></div>
   </header>
-  <div class="summary" aria-live="polite">
-    <div class="thread" id="thread"></div>
-    <div class="count" id="count"></div>
-  </div>
-  <main class="list" id="list"></main>
+  <div class="areas" id="areas" aria-label="نسب المجالات اليوم"></div>
+  <main id="list"></main>
   <div class="tools">
+    <button class="ghost" id="presetBtn" type="button">عادات جاهزة</button>
     <button class="ghost" id="notifBtn" type="button">تفعيل إشعارات التذكير</button>
     <button class="ghost" id="backupBtn" type="button">تنزيل نسخة احتياطية</button>
     <button class="ghost" id="importBtn" type="button">استعادة من نسخة</button>
@@ -129,34 +153,88 @@ legend{font-weight:500;margin-bottom:8px;padding:0}
 </div>
 <button class="add" id="addBtn" type="button">+ عادة جديدة</button>
 
+<!-- Edit habit -->
 <dialog id="dlg">
-  <form id="form" method="dialog">
-    <h2 id="dlgTitle">عادة جديدة</h2>
+  <form id="form">
+    <h3 id="dlgTitle">عادة جديدة</h3>
     <label class="f">اسم العادة
-      <input type="text" name="name" required maxlength="60" placeholder="مثال: قراءة ٢٠ صفحة">
+      <input type="text" name="name" required maxlength="60" placeholder="مثال: المشي">
     </label>
-    <fieldset>
-      <legend>الرمز</legend>
-      <div class="chips icons" id="iconChips"></div>
-    </fieldset>
-    <fieldset>
-      <legend>اللون</legend>
-      <div class="chips" id="colorChips"></div>
-    </fieldset>
-    <fieldset>
-      <legend>أيام التكرار</legend>
-      <div class="chips" id="dayChips"></div>
-    </fieldset>
-    <label class="f">وقت التذكير (اختياري)
-      <input type="time" name="time">
+    <fieldset><legend>الرمز</legend><div class="chips icons" id="iconChips"></div></fieldset>
+    <fieldset><legend>المجال</legend><div class="chips" id="areaChips"></div></fieldset>
+    <label class="f">نوع العادة
+      <select name="type" id="typeSel"></select>
     </label>
-    <p class="hint">يظهر التذكير عندما تكون الصفحة مفتوحة، وكإشعار إذا فعّلت الإشعارات.</p>
+    <div id="numBlock">
+      <div class="row" style="margin-bottom:10px">
+        <label class="f">الوحدة<input type="text" name="unit" maxlength="12" placeholder="دقيقة، لتر، g"></label>
+        <label class="f">مقدار الزيادة<input type="text" name="step" inputmode="decimal" placeholder="1"></label>
+      </div>
+      <div class="grid3" id="levels3">
+        <label class="f"><span id="lMin">الحد الأدنى</span><input type="text" name="min" inputmode="decimal"></label>
+        <label class="f"><span id="lTarget">الهدف</span><input type="text" name="target" inputmode="decimal"></label>
+        <label class="f"><span id="lExc">ممتاز</span><input type="text" name="excellent" inputmode="decimal"></label>
+      </div>
+      <div class="grid3" id="levels2" hidden>
+        <label class="f">من<input type="text" name="lo" inputmode="decimal"></label>
+        <label class="f">إلى<input type="text" name="hi" inputmode="decimal"></label>
+      </div>
+      <p class="hint" id="levelHint"></p>
+    </div>
+    <fieldset>
+      <legend>التكرار</legend>
+      <div class="chips" id="freqChips">
+        <label><input type="radio" name="fkind" value="days" checked><span>أيام محددة</span></label>
+        <label><input type="radio" name="fkind" value="weekly"><span>عدد مرات أسبوعياً</span></label>
+      </div>
+    </fieldset>
+    <div class="chips" id="dayChips"></div>
+    <label class="f" id="timesWrap" hidden>عدد المرات في الأسبوع
+      <input type="text" name="times" inputmode="numeric" value="3">
+    </label>
+    <label class="f">وقت التذكير (اختياري)<input type="time" name="time"></label>
     <div class="row">
       <button class="danger" type="button" id="delBtn" hidden>حذف العادة</button>
       <div style="display:flex;gap:8px;margin-inline-start:auto">
-        <button class="ghost" type="button" id="cancelBtn">إلغاء</button>
+        <button class="ghost" type="button" data-close>إلغاء</button>
         <button class="primary" type="submit">حفظ</button>
       </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- Log a value -->
+<dialog id="entry">
+  <form id="entryForm">
+    <h3 id="eTitle"></h3>
+    <p class="sub" id="eSub"></p>
+    <div class="stepper">
+      <button type="button" id="ePlus" aria-label="زيادة">+</button>
+      <input type="text" id="eVal" inputmode="decimal" aria-label="القيمة">
+      <button type="button" id="eMinus" aria-label="إنقاص">−</button>
+      <span class="unitlbl" id="eUnit"></span>
+    </div>
+    <div class="quick" id="eQuick"></div>
+    <p class="hint" id="eLevel"></p>
+    <div class="row">
+      <button class="danger" type="button" id="eClear">مسح التسجيل</button>
+      <div style="display:flex;gap:8px;margin-inline-start:auto">
+        <button class="ghost" type="button" data-close>إلغاء</button>
+        <button class="primary" type="submit">حفظ</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- Presets -->
+<dialog id="presets">
+  <form id="presetForm">
+    <h3>عادات جاهزة</h3>
+    <p class="sub">اختر ما تريد إضافته. لن تُمسّ عاداتك الحالية، وتستطيع تعديل أي رقم لاحقاً.</p>
+    <div class="plist" id="plist"></div>
+    <div class="row">
+      <button class="ghost" type="button" data-close>إلغاء</button>
+      <button class="primary" type="submit">إضافة المحدد</button>
     </div>
   </form>
 </dialog>
@@ -164,198 +242,397 @@ legend{font-weight:500;margin-bottom:8px;padding:0}
 <div class="toast" id="toast" role="status"><span id="toastText"></span><button type="button" id="toastAct" hidden></button></div>
 
 <script>
+/* ================= constants ================= */
 const DAY_NAMES=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
 const DAY_ORDER=[6,0,1,2,3,4,5];
-const ICONS=["📖","💧","🏃","🧘","🕌","🥗","😴","✍️","🧪","💊","🚭","📵"];
-const COLORS=["lapis","teal","olive","amber","rose"];
-const LS="habit-beads-v1";
+const ICONS=["📖","📚","🎓","✍️","🧪","💧","🍗","🔥","🚶","🏋️","😴","🧘","🕌","🚬","💨","💰","📈","📵","💊","🥗"];
+const AREAS={health:{name:"الصحة",color:"teal"},phd:{name:"الدكتوراه",color:"lapis"},finance:{name:"المال",color:"amber"},life:{name:"نمط الحياة",color:"rose"}};
+const AREA_ORDER=["health","phd","finance","life"];
+const TYPES={check:"إنجاز (نعم / لا)",amount:"كمية أو مدة — الأكثر أفضل",limit:"حد أقصى — الأقل أفضل",range:"نطاق بين قيمتين"};
+const LVL_NAME={excellent:"ممتاز",target:"الهدف",min:"الحد الأدنى",partial:"دون الحد الأدنى",over:"خارج الحد",none:""};
+const SCORE={none:0,partial:.25,over:0,min:.5,target:1,excellent:1};
+const KEPT=l=>l==="min"||l==="target"||l==="excellent";
+const SAT_THU=[6,0,1,2,3,4], ALL=[0,1,2,3,4,5,6];
+const LS_OLD="habit-beads-v1", LS="adati-v2";
+
+const PRESETS=[
+ {name:"النوم",icon:"😴",area:"health",type:"amount",unit:"ساعة",step:.5,min:6,target:7,excellent:8,freq:{kind:"days",days:ALL}},
+ {name:"الماء",icon:"💧",area:"health",type:"amount",unit:"لتر",step:.25,min:1.5,target:2,excellent:2.5,freq:{kind:"days",days:ALL}},
+ {name:"البروتين",icon:"🍗",area:"health",type:"amount",unit:"g",step:10,min:90,target:110,excellent:120,freq:{kind:"days",days:ALL}},
+ {name:"السعرات",icon:"🔥",area:"health",type:"range",unit:"kcal",step:50,lo:1600,hi:2000,freq:{kind:"days",days:ALL},note:"نطاق مبدئي؛ عدّله حسب وزنك ونشاطك"},
+ {name:"المشي",icon:"🚶",area:"health",type:"amount",unit:"دقيقة",step:5,min:10,target:30,excellent:60,freq:{kind:"days",days:ALL}},
+ {name:"التمرين",icon:"🏋️",area:"health",type:"check",freq:{kind:"weekly",times:3}},
+ {name:"السجائر",icon:"🚬",area:"life",type:"limit",unit:"سيجارة",step:1,min:10,target:5,excellent:0,freq:{kind:"days",days:ALL}},
+ {name:"الأرجيلة",icon:"💨",area:"life",type:"limit",unit:"جلسة",step:1,min:1,target:0,excellent:0,freq:{kind:"days",days:ALL}},
+ {name:"عمل عميق على الدكتوراه",icon:"🎓",area:"phd",type:"amount",unit:"دقيقة",step:10,min:20,target:60,excellent:120,freq:{kind:"days",days:SAT_THU},time:"08:00"},
+ {name:"قراءة بحثية",icon:"📚",area:"phd",type:"amount",unit:"دقيقة",step:5,min:10,target:30,excellent:60,freq:{kind:"days",days:SAT_THU}},
+ {name:"مخرج بحثي",icon:"✍️",area:"phd",type:"amount",unit:"مخرج",step:1,min:1,target:1,excellent:2,freq:{kind:"days",days:SAT_THU},note:"فقرة، شكل، جدول، نتيجة Aspen، تحليل ورقة"},
+ {name:"المراجعة المالية",icon:"💰",area:"finance",type:"check",freq:{kind:"days",days:[0]},time:"20:00",note:"المصروف، الديون، الادخار، الاستثمار"}
+];
+
+/* ================= helpers ================= */
 const pad=n=>String(n).padStart(2,"0");
 const keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
-const nf=new Intl.NumberFormat("ar-IQ");
+const fromKey=k=>{const [y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)};
+const addDays=(d,n)=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()+n);return x};
+const today0=()=>addDays(new Date(),0);
+const weekStart=d=>addDays(d,-((d.getDay()+1)%7)); // week starts Saturday
+const nf=new Intl.NumberFormat("ar-IQ",{maximumFractionDigits:2});
+const fmt=v=>v==null||v===""?"—":nf.format(v);
 const $=id=>document.getElementById(id);
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function toNum(s){
+  s=String(s??"").trim().replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٫,]/g,".");
+  if(s==="")return null;const n=Number(s);return Number.isFinite(n)?n:NaN;
+}
+function fmtTime(t){const [H,M]=t.split(":").map(Number);const d=new Date();d.setHours(H,M);return d.toLocaleTimeString("ar-IQ",{hour:"numeric",minute:"2-digit"})}
+const newId=()=>"h"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const colorOf=h=>`var(--${(AREAS[h.area]||AREAS.life).color})`;
 
-let state={habits:[],log:{}};
-try{const s=localStorage.getItem(LS);if(s)state=JSON.parse(s)}catch(e){}
-if(!state.habits)state.habits=[];if(!state.log)state.log={};
+/* ================= state & migration ================= */
+function migrate(d){
+  if(!d||!Array.isArray(d.habits))return null;
+  if(d.v===2)return {v:2,habits:d.habits,log:d.log||{}};
+  // v1: habits had days[] and log was {date:[ids]}
+  const habits=d.habits.map(h=>({id:h.id,name:h.name,icon:h.icon||"•",area:"life",type:"check",
+    freq:{kind:"days",days:Array.isArray(h.days)&&h.days.length?h.days:ALL},time:h.time||"",created:h.created||keyOf(today0())}));
+  const log={};
+  for(const [k,v] of Object.entries(d.log||{})){
+    if(Array.isArray(v)){if(v.length){log[k]={};v.forEach(id=>log[k][id]=1)}}
+    else if(v&&typeof v==="object")log[k]=v;
+  }
+  return {v:2,habits,log};
+}
+let state={v:2,habits:[],log:{}},migratedNotice=false;
+try{
+  const s2=localStorage.getItem(LS);
+  if(s2)state=migrate(JSON.parse(s2))||state;
+  else{const s1=localStorage.getItem(LS_OLD);if(s1){const m=migrate(JSON.parse(s1));if(m&&m.habits.length){state=m;migratedNotice=true}}}
+}catch(e){}
 
-/* ---------- persistence ---------- */
-function prune(){const cut=keyOf(addDays(new Date(),-400));for(const k of Object.keys(state.log))if(k<cut)delete state.log[k]}
+function prune(){const cut=keyOf(addDays(today0(),-450));for(const k of Object.keys(state.log))if(k<cut)delete state.log[k]}
 function persist(){
   prune();
   try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){toast("تعذّر الحفظ: مساحة التخزين ممتلئة")}
 }
 if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(()=>{})}
+if(migratedNotice)persist();
 
-/* ---------- logic ---------- */
-const isDone=(h,k)=>(state.log[k]||[]).includes(h.id);
-const scheduled=(h,d)=>h.days.includes(d.getDay());
-function toggle(h,k){
-  const arr=state.log[k]||(state.log[k]=[]);
-  const i=arr.indexOf(h.id);
-  if(i>=0)arr.splice(i,1);else arr.push(h.id);
-  if(!arr.length)delete state.log[k];
-  persist();render();
+/* ================= core logic ================= */
+const val=(h,k)=>{const v=state.log[k]?.[h.id];return v==null?null:v};
+function setVal(h,k,v){
+  if(v==null){if(state.log[k]){delete state.log[k][h.id];if(!Object.keys(state.log[k]).length)delete state.log[k]}}
+  else (state.log[k]||(state.log[k]={}))[h.id]=v;
+  persist();
 }
-function streak(h){
-  let d=new Date(),n=0;
-  if(scheduled(h,d)&&!isDone(h,keyOf(d)))d=addDays(d,-1);
-  for(let i=0;i<730;i++){
-    if(scheduled(h,d)){if(isDone(h,keyOf(d)))n++;else break}
-    d=addDays(d,-1);
+function level(h,v){
+  if(v==null)return "none";
+  switch(h.type){
+    case "check":return v>0?"target":"none";
+    case "amount":if(v>=h.excellent)return "excellent";if(v>=h.target)return "target";if(v>=h.min)return "min";return v>0?"partial":"none";
+    case "limit":if(v<=h.excellent)return "excellent";if(v<=h.target)return "target";if(v<=h.min)return "min";return "over";
+    case "range":return v>=h.lo&&v<=h.hi?"target":"over";
   }
-  return n;
+  return "none";
 }
-function rate30(h){
-  let s=0,c=0,d=new Date();
-  const start=h.created?new Date(h.created):addDays(d,-29);
-  for(let i=0;i<30;i++){const x=addDays(d,-i);if(x<new Date(start.toDateString()))break;if(scheduled(h,x)){s++;if(isDone(h,keyOf(x)))c++}}
-  return s?Math.round(c/s*100):null;
+const lvlAt=(h,d)=>level(h,val(h,keyOf(d)));
+const isWeekly=h=>h.freq.kind==="weekly";
+const scheduled=(h,d)=>isWeekly(h)||h.freq.days.includes(d.getDay());
+const startOf=h=>{const lim=addDays(today0(),-420),c=h.created?fromKey(h.created):lim;return c<lim?lim:c};
+function weekCount(h,ws){let n=0;for(let i=0;i<7;i++)if(KEPT(lvlAt(h,addDays(ws,i))))n++;return n}
+
+function runs(h){
+  const t=today0(),tk=keyOf(t);let run=0,best=0;
+  if(isWeekly(h)){
+    const cw=keyOf(weekStart(t));
+    for(let w=weekStart(startOf(h));keyOf(w)<=cw;w=addDays(w,7)){
+      if(weekCount(h,w)>=h.freq.times){run++;if(run>best)best=run}
+      else if(keyOf(w)!==cw)run=0;
+    }
+  }else{
+    for(let d=startOf(h);keyOf(d)<=tk;d=addDays(d,1)){
+      if(!scheduled(h,d))continue;
+      if(KEPT(lvlAt(h,d))){run++;if(run>best)best=run}
+      else if(keyOf(d)!==tk)run=0;
+    }
+  }
+  return {cur:run,best};
+}
+function consistency(h){
+  const t=today0(),tk=keyOf(t),s=keyOf(startOf(h));let ok=0,all=0;
+  if(isWeekly(h)){
+    const cw=weekStart(t);
+    for(let i=0;i<5;i++){const w=addDays(cw,-7*i);if(keyOf(addDays(w,6))<s)break;
+      const met=weekCount(h,w)>=h.freq.times;if(i===0&&!met)continue;all++;if(met)ok++}
+  }else{
+    for(let i=0;i<30;i++){const d=addDays(t,-i),k=keyOf(d);if(k<s)break;if(!scheduled(h,d))continue;
+      const kept=KEPT(lvlAt(h,d));if(k===tk&&!kept)continue;all++;if(kept)ok++}
+  }
+  return all?Math.round(ok/all*100):null;
+}
+function todayScore(h){
+  const t=today0();
+  if(isWeekly(h))return Math.min(weekCount(h,weekStart(t))/h.freq.times,1);
+  return SCORE[lvlAt(h,t)];
+}
+function valueText(h,v){
+  const u=h.unit?` ${esc(h.unit)}`:"";
+  switch(h.type){
+    case "amount":return `${fmt(v??0)} / ${fmt(h.target)}${u}`;
+    case "limit":return `${fmt(v)}${u} · الهدف ${fmt(h.target)} أو أقل`;
+    case "range":return `${fmt(v)}${u} · النطاق ${fmt(h.lo)} إلى ${fmt(h.hi)}`;
+  }
+  return "";
 }
 
-/* ---------- render ---------- */
+/* ================= render ================= */
 function render(){
-  const today=new Date(),tk=keyOf(today);
-  $("date").textContent=today.toLocaleDateString("ar-IQ",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  const todays=state.habits.filter(h=>scheduled(h,today));
-  const done=todays.filter(h=>isDone(h,tk)).length;
-  $("thread").innerHTML=todays.map((h,i)=>`<span class="${i<done?"on":""}"></span>`).join("");
-  $("count").textContent=todays.length?`${nf.format(done)} من ${nf.format(todays.length)}`:"";
-
+  const t=today0(),tk=keyOf(t);
+  $("date").textContent=t.toLocaleDateString("ar-IQ",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
   const list=$("list");
   if(!state.habits.length){
-    list.innerHTML=`<div class="empty"><strong>ابدأ بأول عادة</strong>أضف عادة، حدّد أيامها ووقت تذكيرها، ثم علّمها كل يوم لتكتمل حبّات مسبحتك.</div>`;
-    return;
+    $("score").hidden=true;$("areas").innerHTML="";
+    list.innerHTML=`<div class="empty"><strong>ابدأ بعاداتك</strong>أضف عادات جاهزة مضبوطة الأهداف، أو أنشئ عادتك الخاصة.<br><button class="primary" type="button" id="emptyPreset">اختيار عادات جاهزة</button></div>`;
+    $("emptyPreset").onclick=openPresets;return;
   }
-  const sorted=[...state.habits].sort((a,b)=>(scheduled(b,today)-scheduled(a,today))||((a.time||"99")>(b.time||"99")?1:-1));
+  // scores
+  const active=state.habits.filter(h=>scheduled(h,t));
+  const all=active.map(todayScore);
+  $("score").hidden=!active.length;
+  $("scoreNum").textContent=active.length?nf.format(Math.round(all.reduce((a,b)=>a+b,0)/all.length*100))+"٪":"";
+  $("areas").innerHTML=AREA_ORDER.map(a=>{
+    const hs=active.filter(h=>h.area===a);if(!hs.length)return "";
+    const p=Math.round(hs.map(todayScore).reduce((x,y)=>x+y,0)/hs.length*100);
+    return `<span>${AREAS[a].name}</span><div class="bar" style="--c:var(--${AREAS[a].color})"><i style="width:${p}%"></i></div><span class="pct">${nf.format(p)}٪</span>`;
+  }).join("");
+  // list by area
   list.innerHTML="";
-  for(const h of sorted){
-    const on=scheduled(h,today),dn=isDone(h,tk),st=streak(h),r=rate30(h);
-    const el=document.createElement("div");
-    el.className="habit"+(on?"":" off");
-    el.style.setProperty("--c",`var(--${h.color||"lapis"})`);
-    let beads="";
-    for(let i=13;i>=0;i--){
-      const d=addDays(today,-i),k=keyOf(d);
-      const sch=scheduled(h,d),bd=isDone(h,k);
-      const label=`${DAY_NAMES[d.getDay()]} ${d.toLocaleDateString("ar-IQ",{day:"numeric",month:"long"})}: ${bd?"منجزة":sch?"غير منجزة":"ليست ضمن الأيام"}`;
-      if(!sch&&!bd)beads+=`<span class="bead off" title="${label}"></span>`;
-      else beads+=`<button type="button" class="bead${bd?" done":""}${i===0?" today":""}" data-k="${k}" aria-label="${label}" title="${label}"></button>`;
-    }
-    el.innerHTML=`
-      <button type="button" class="check${dn?" done":""}" ${on?"":"disabled"} aria-pressed="${dn}" aria-label="${dn?"إلغاء إنجاز":"إنجاز"} ${esc(h.name)}">
-        <span class="ico">${h.icon||"•"}</span><span class="tick">✓</span></button>
-      <p class="name">${esc(h.name)}</p>
-      <button type="button" class="edit" aria-label="تعديل ${esc(h.name)}">⋯</button>
-      <div class="meta">
-        ${on?"":"<span>ليست اليوم</span>"}
-        ${h.time?`<span>⏰ ${fmtTime(h.time)}</span>`:""}
-        <span>🔥 ${nf.format(st)} ${st===1?"يوم":"أيام"} متتالية</span>
-        ${r!==null?`<span>${nf.format(r)}٪ خلال ٣٠ يوماً</span>`:""}
-      </div>
-      <div class="beads">${beads}</div>`;
-    el.querySelector(".check").onclick=()=>{if(on)toggle(h,tk)};
-    el.querySelector(".edit").onclick=()=>openDlg(h);
-    el.querySelectorAll("button.bead").forEach(b=>b.onclick=()=>toggle(h,b.dataset.k));
-    list.appendChild(el);
+  for(const a of AREA_ORDER){
+    const hs=state.habits.filter(h=>h.area===a);if(!hs.length)continue;
+    hs.sort((x,y)=>(scheduled(y,t)-scheduled(x,t))||((x.time||"99")>(y.time||"99")?1:-1));
+    const sec=document.createElement("h2");sec.className="sec";sec.style.setProperty("--c",`var(--${AREAS[a].color})`);sec.textContent=AREAS[a].name;
+    list.appendChild(sec);
+    for(const h of hs)list.appendChild(row(h,t,tk));
   }
 }
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function fmtTime(t){const [H,M]=t.split(":").map(Number);const d=new Date();d.setHours(H,M);return d.toLocaleTimeString("ar-IQ",{hour:"numeric",minute:"2-digit"})}
+function row(h,t,tk){
+  const on=scheduled(h,t),v=val(h,tk),lv=level(h,v),r=runs(h),c=consistency(h);
+  const el=document.createElement("div");
+  el.className="habit"+(on?"":" off");el.style.setProperty("--c",colorOf(h));
+  const unitW=isWeekly(h)?"أسبوع":"يوم";
+  let beads="";
+  for(let i=13;i>=0;i--){
+    const d=addDays(t,-i),k=keyOf(d),bl=lvlAt(h,d),bv=val(h,k);
+    const lbl=`${DAY_NAMES[d.getDay()]} ${d.toLocaleDateString("ar-IQ",{day:"numeric",month:"long"})}: ${bv==null?"غير مسجّل":(h.type==="check"?"منجزة":fmt(bv)+" "+(h.unit||""))+(LVL_NAME[bl]?" — "+LVL_NAME[bl]:"")}`;
+    if(!scheduled(h,d)&&bv==null)beads+=`<span class="bead off" title="${esc(lbl)}"></span>`;
+    else beads+=`<button type="button" class="bead lv-${bl}${i===0?" today":""}" data-k="${k}" aria-label="${esc(lbl)}" title="${esc(lbl)}"></button>`;
+  }
+  const wk=isWeekly(h)?`<span>هذا الأسبوع ${nf.format(weekCount(h,weekStart(t)))} من ${nf.format(h.freq.times)}</span>`:"";
+  el.innerHTML=`
+    <button type="button" class="check lv-${lv}" ${on?"":"disabled"} aria-label="${h.type==="check"?(v?"إلغاء إنجاز":"إنجاز"):"تسجيل"} ${esc(h.name)}">${h.icon||"•"}</button>
+    <p class="name">${esc(h.name)}</p>
+    <button type="button" class="edit" aria-label="تعديل ${esc(h.name)}">⋯</button>
+    <div class="val">${h.type!=="check"?`<span>${valueText(h,v)}</span>`:""}${LVL_NAME[lv]?`<span class="badge ${lv}">${LVL_NAME[lv]}</span>`:""}${wk}${on?"":"<span class='badge'>ليست اليوم</span>"}</div>
+    <div class="meta">
+      ${h.time?`<span>⏰ ${fmtTime(h.time)}</span>`:""}
+      <span>الحالية ${nf.format(r.cur)} ${unitW}</span>
+      <span>الأفضل ${nf.format(r.best)} ${unitW}</span>
+      ${c!==null?`<span>الالتزام ${nf.format(c)}٪</span>`:""}
+    </div>
+    <div class="beads">${beads}</div>`;
+  el.querySelector(".check").onclick=()=>{if(on)logAt(h,tk)};
+  el.querySelector(".edit").onclick=()=>openEdit(h);
+  el.querySelectorAll("button.bead").forEach(b=>b.onclick=()=>logAt(h,b.dataset.k));
+  return el;
+}
+function logAt(h,k){
+  if(h.type==="check"){const v=val(h,k);setVal(h,k,v?null:1);render();return}
+  openEntry(h,k);
+}
 
-/* ---------- dialog ---------- */
-let editing=null;
-function buildChips(){
-  $("iconChips").innerHTML=ICONS.map((ic,i)=>`<label><input type="radio" name="icon" value="${ic}" ${i===0?"checked":""}><span>${ic}</span></label>`).join("");
-  $("colorChips").innerHTML=COLORS.map((c,i)=>`<label class="swatch" style="background:var(--${c})" title="${c}"><input type="radio" name="color" value="${c}" ${i===0?"checked":""} aria-label="لون ${i+1}"></label>`).join("");
-  $("dayChips").innerHTML=DAY_ORDER.map(d=>`<label><input type="checkbox" name="days" value="${d}" checked><span>${DAY_NAMES[d]}</span></label>`).join("");
+/* ================= entry dialog ================= */
+let eH=null,eK=null;
+function openEntry(h,k){
+  eH=h;eK=k;
+  const d=fromKey(k),isToday=k===keyOf(today0());
+  $("eTitle").textContent=`${h.icon} ${h.name}`;
+  $("eSub").textContent=isToday?"اليوم":d.toLocaleDateString("ar-IQ",{weekday:"long",day:"numeric",month:"long"});
+  $("eUnit").textContent=h.unit||"";
+  const cur=val(h,k);
+  $("eVal").value=cur==null?(h.type==="limit"?"0":""):String(cur);
+  const q=[];
+  if(h.type==="amount")q.push(["الحد الأدنى",h.min],["الهدف",h.target],["ممتاز",h.excellent]);
+  if(h.type==="limit"){q.push(["ممتاز",h.excellent]);if(h.target!==h.excellent)q.push(["الهدف",h.target]);if(h.min!==h.target)q.push(["الحد المقبول",h.min])}
+  if(h.type==="range")q.push(["من",h.lo],["إلى",h.hi]);
+  const seen=new Set();
+  $("eQuick").innerHTML=q.filter(([,v])=>{if(seen.has(v))return false;seen.add(v);return true})
+    .map(([l,v])=>`<button type="button" data-v="${v}">${l}: ${fmt(v)}</button>`).join("");
+  $("eQuick").querySelectorAll("button").forEach(b=>b.onclick=()=>{$("eVal").value=b.dataset.v;updEntryLevel()});
+  $("eClear").hidden=cur==null;
+  updEntryLevel();
+  $("entry").showModal();
 }
-function openDlg(h){
-  editing=h||null;
-  const f=$("form");f.reset();
-  $("dlgTitle").textContent=h?"تعديل العادة":"عادة جديدة";
-  $("delBtn").hidden=!h;
-  if(h){
-    f.name.value=h.name;f.time.value=h.time||"";
-    f.querySelectorAll("[name=icon]").forEach(i=>i.checked=i.value===h.icon);
-    f.querySelectorAll("[name=color]").forEach(i=>i.checked=i.value===h.color);
-    f.querySelectorAll("[name=days]").forEach(i=>i.checked=h.days.includes(+i.value));
-  }
-  $("dlg").showModal();
+function updEntryLevel(){
+  const n=toNum($("eVal").value);
+  if(n==null||Number.isNaN(n)){$("eLevel").textContent="";return}
+  const l=level(eH,n);$("eLevel").textContent=LVL_NAME[l]?`المستوى: ${LVL_NAME[l]}`:"";
+}
+$("eVal").addEventListener("input",updEntryLevel);
+function stepBy(sgn){
+  const s=eH.step||1,n=toNum($("eVal").value)||0;
+  $("eVal").value=String(Math.max(0,Math.round((n+sgn*s)*1000)/1000));updEntryLevel();
+}
+$("ePlus").onclick=()=>stepBy(1);$("eMinus").onclick=()=>stepBy(-1);
+$("entryForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const n=toNum($("eVal").value);
+  if(n==null||Number.isNaN(n)||n<0){toast("أدخل رقماً صحيحاً");return}
+  setVal(eH,eK,n);$("entry").close();render();
+  const l=level(eH,n);
+  toast(l==="excellent"?"ممتاز! 🌟":l==="target"?"حققت الهدف ✓":l==="min"?"الحد الأدنى محقق، وهذا يُحسب لك":l==="over"?"سُجّل. غداً يوم جديد":"سُجّل");
+});
+$("eClear").onclick=()=>{setVal(eH,eK,null);$("entry").close();render()};
+
+/* ================= edit dialog ================= */
+let editing=null;
+function buildForm(){
+  $("iconChips").innerHTML=ICONS.map((ic,i)=>`<label><input type="radio" name="icon" value="${ic}" ${i===0?"checked":""}><span>${ic}</span></label>`).join("");
+  $("areaChips").innerHTML=AREA_ORDER.map((a,i)=>`<label><input type="radio" name="area" value="${a}" ${i===0?"checked":""}><span>${AREAS[a].name}</span></label>`).join("");
+  $("typeSel").innerHTML=Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+  $("dayChips").innerHTML=DAY_ORDER.map(d=>`<label><input type="checkbox" name="days" value="${d}" checked><span>${DAY_NAMES[d]}</span></label>`).join("");
+  $("typeSel").onchange=updTypeUI;
+  $("freqChips").querySelectorAll("input").forEach(i=>i.onchange=updFreqUI);
+}
+function updTypeUI(){
+  const t=$("typeSel").value;
+  $("numBlock").hidden=t==="check";
+  $("levels3").hidden=!(t==="amount"||t==="limit");
+  $("levels2").hidden=t!=="range";
+  if(t==="amount"){$("lMin").textContent="الحد الأدنى";$("lTarget").textContent="الهدف";$("lExc").textContent="ممتاز";
+    $("levelHint").textContent="مثال للمشي: ١٠ / ٣٠ / ٦٠ دقيقة. تحقيق الحد الأدنى يحافظ على السلسلة."}
+  if(t==="limit"){$("lMin").textContent="أقصى مقبول";$("lTarget").textContent="الهدف (أقصى)";$("lExc").textContent="ممتاز (أقصى)";
+    $("levelHint").textContent="مثال للسجائر: ١٠ / ٥ / ٠. خفّض الهدف تدريجياً كل أسبوعين."}
+  if(t==="range")$("levelHint").textContent="تكون العادة محققة إذا وقعت القيمة داخل النطاق.";
+}
+function updFreqUI(){
+  const w=$("form").querySelector("[name=fkind]:checked").value==="weekly";
+  $("dayChips").hidden=w;$("timesWrap").hidden=!w;
+}
+function openEdit(h){
+  editing=h||null;const f=$("form");f.reset();
+  $("dlgTitle").textContent=h?"تعديل العادة":"عادة جديدة";$("delBtn").hidden=!h;
+  const x=h||{type:"check",area:"health",icon:ICONS[0],freq:{kind:"days",days:ALL}};
+  f.name.value=x.name||"";f.time.value=x.time||"";
+  f.querySelectorAll("[name=icon]").forEach(i=>i.checked=i.value===x.icon);
+  f.querySelectorAll("[name=area]").forEach(i=>i.checked=i.value===x.area);
+  f.type.value=x.type;
+  for(const k of ["unit","step","min","target","excellent","lo","hi"])f[k].value=x[k]??"";
+  f.querySelectorAll("[name=fkind]").forEach(i=>i.checked=i.value===x.freq.kind);
+  f.querySelectorAll("[name=days]").forEach(i=>i.checked=(x.freq.days||ALL).includes(+i.value));
+  f.times.value=x.freq.times||3;
+  updTypeUI();updFreqUI();$("dlg").showModal();
 }
 $("form").addEventListener("submit",e=>{
-  e.preventDefault();
-  const f=e.target;
-  const days=[...f.querySelectorAll("[name=days]:checked")].map(i=>+i.value);
-  if(!days.length){toast("اختر يوماً واحداً على الأقل");return}
-  const data={name:f.name.value.trim(),icon:f.querySelector("[name=icon]:checked")?.value||"•",color:f.querySelector("[name=color]:checked")?.value||"lapis",days,time:f.time.value||""};
-  if(!data.name)return;
-  if(editing)Object.assign(editing,data);
-  else state.habits.push({id:"h"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),created:keyOf(new Date()),...data});
-  $("dlg").close();persist();render();
-  toast(editing?"حُفظت التعديلات":"أُضيفت العادة");
+  e.preventDefault();const f=e.target;
+  const d={name:f.name.value.trim(),icon:f.querySelector("[name=icon]:checked")?.value||"•",
+    area:f.querySelector("[name=area]:checked")?.value||"life",type:f.type.value,time:f.time.value||""};
+  if(!d.name)return;
+  const kind=f.querySelector("[name=fkind]:checked").value;
+  if(kind==="weekly"){const t=Math.round(toNum(f.times.value));if(!(t>=1&&t<=7)){toast("عدد المرات بين ١ و٧");return}d.freq={kind,times:t}}
+  else{const days=[...f.querySelectorAll("[name=days]:checked")].map(i=>+i.value);if(!days.length){toast("اختر يوماً واحداً على الأقل");return}d.freq={kind,days}}
+  if(d.type!=="check"){
+    d.unit=f.unit.value.trim();const st=toNum(f.step.value);d.step=st>0?st:1;
+    if(d.type==="range"){d.lo=toNum(f.lo.value);d.hi=toNum(f.hi.value);
+      if(!(d.lo>=0&&d.hi>=d.lo)){toast("يجب أن تكون «من» أصغر من «إلى» أو مساوية لها");return}}
+    else{
+      let mn=toNum(f.min.value),tg=toNum(f.target.value),ex=toNum(f.excellent.value);
+      if(tg==null||Number.isNaN(tg)){toast("أدخل قيمة الهدف");return}
+      if(mn==null||Number.isNaN(mn))mn=tg;if(ex==null||Number.isNaN(ex))ex=tg;
+      if(d.type==="amount"&&!(mn<=tg&&tg<=ex)){toast("رتّب القيم: الحد الأدنى ثم الهدف ثم ممتاز تصاعدياً");return}
+      if(d.type==="limit"&&!(ex<=tg&&tg<=mn)){toast("للحد الأقصى: ممتاز أصغر من الهدف، والهدف أصغر من أقصى مقبول");return}
+      Object.assign(d,{min:mn,target:tg,excellent:ex});
+    }
+  }
+  if(editing){for(const k of ["unit","step","min","target","excellent","lo","hi"])delete editing[k];Object.assign(editing,d)}
+  else state.habits.push({id:newId(),created:keyOf(today0()),...d});
+  $("dlg").close();persist();render();toast(editing?"حُفظت التعديلات":"أُضيفت العادة");
 });
-$("cancelBtn").onclick=()=>$("dlg").close();
 $("delBtn").onclick=()=>{
-  if(!editing)return;
-  if(!confirm(`حذف «${editing.name}» وسجلّها؟`))return;
-  const id=editing.id;
-  state.habits=state.habits.filter(h=>h.id!==id);
-  for(const k of Object.keys(state.log)){state.log[k]=state.log[k].filter(x=>x!==id);if(!state.log[k].length)delete state.log[k]}
+  if(!editing||!confirm(`حذف «${editing.name}» وكل سجلّها؟`))return;
+  const id=editing.id;state.habits=state.habits.filter(h=>h.id!==id);
+  for(const k of Object.keys(state.log)){delete state.log[k][id];if(!Object.keys(state.log[k]).length)delete state.log[k]}
   $("dlg").close();persist();render();toast("حُذفت العادة");
 };
-$("addBtn").onclick=()=>openDlg(null);
+$("addBtn").onclick=()=>openEdit(null);
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>b.closest("dialog").close());
 
-/* ---------- toast ---------- */
+/* ================= presets ================= */
+function presetDesc(p){
+  const u=p.unit?" "+p.unit:"";
+  let s=p.type==="check"?"إنجاز":p.type==="amount"?`${fmt(p.min)} / ${fmt(p.target)} / ${fmt(p.excellent)}${u}`:p.type==="limit"?`أقصى مقبول ${fmt(p.min)} · الهدف ${fmt(p.target)} أو أقل · ممتاز ${fmt(p.excellent)}${u}`:`${fmt(p.lo)} إلى ${fmt(p.hi)}${u}`;
+  const fr=p.freq.kind==="weekly"?`${nf.format(p.freq.times)} مرات أسبوعياً`:p.freq.days.length===7?"يومياً":p.freq.days.length===1?`كل ${DAY_NAMES[p.freq.days[0]]}`:"السبت–الخميس";
+  return `${AREAS[p.area].name} · ${s} · ${fr}${p.time?" · "+fmtTime(p.time):""}${p.note?"<br>"+esc(p.note):""}`;
+}
+function openPresets(){
+  const names=new Set(state.habits.map(h=>h.name));
+  $("plist").innerHTML=PRESETS.map((p,i)=>{const ex=names.has(p.name);
+    return `<label class="preset${ex?" exists":""}"><input type="checkbox" value="${i}" ${ex?"disabled":"checked"}><span><b>${p.icon} ${esc(p.name)}</b>${ex?" (موجودة)":""}<small>${presetDesc(p)}</small></span></label>`}).join("");
+  $("presets").showModal();
+}
+$("presetBtn").onclick=openPresets;
+$("presetForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const idx=[...$("plist").querySelectorAll("input:checked:not(:disabled)")].map(i=>+i.value);
+  const ck=keyOf(today0());
+  for(const i of idx){const {note,...p}=PRESETS[i];state.habits.push({id:newId(),created:ck,...JSON.parse(JSON.stringify(p))})}
+  $("presets").close();persist();render();
+  if(idx.length)toast(`أُضيفت ${nf.format(idx.length)} عادة`);
+});
+
+/* ================= toast ================= */
 let tTimer;
 function toast(msg,act){
-  $("toastText").textContent=msg;
-  const b=$("toastAct");
+  $("toastText").textContent=msg;const b=$("toastAct");
   if(act){b.hidden=false;b.textContent=act.label;b.onclick=()=>{act.fn();hideToast()}}else b.hidden=true;
-  $("toast").classList.add("show");clearTimeout(tTimer);
-  tTimer=setTimeout(hideToast,act?12000:2600);
+  $("toast").classList.add("show");clearTimeout(tTimer);tTimer=setTimeout(hideToast,act?12000:2600);
 }
 function hideToast(){$("toast").classList.remove("show")}
 
-/* ---------- reminders ---------- */
-const notified=new Set();
-function notifSupported(){return "Notification" in window}
+/* ================= reminders ================= */
+const notified=new Set();let swReg=null;
+const notifSupported=()=>"Notification" in window;
 function updateNotifBtn(){
-  const b=$("notifBtn");
-  if(!notifSupported()){b.hidden=true;return}
+  const b=$("notifBtn");if(!notifSupported()){b.hidden=true;return}
   if(Notification.permission==="granted"){b.textContent="الإشعارات مفعّلة";b.disabled=true}
-  else if(Notification.permission==="denied"){b.textContent="الإشعارات محظورة في المتصفح";b.disabled=true}
+  else if(Notification.permission==="denied"){b.textContent="الإشعارات محظورة في الإعدادات";b.disabled=true}
 }
 $("notifBtn").onclick=async()=>{
-  try{const p=await Notification.requestPermission();updateNotifBtn();toast(p==="granted"?"سيصلك إشعار عند موعد كل عادة":"ستظهر التذكيرات داخل الصفحة فقط")}
-  catch(e){toast("المتصفح لا يسمح بالإشعارات هنا، ستظهر التذكيرات داخل الصفحة")}
+  try{const p=await Notification.requestPermission();updateNotifBtn();toast(p==="granted"?"سيصلك إشعار عند موعد كل عادة":"ستظهر التذكيرات داخل التطبيق فقط")}
+  catch(e){toast("الإشعارات غير متاحة هنا، ستظهر التذكيرات داخل التطبيق")}
 };
-let swReg=null;
 async function showNotif(body,tag){
   if(!notifSupported()||Notification.permission!=="granted")return;
-  try{
-    const reg=swReg||(navigator.serviceWorker&&await navigator.serviceWorker.ready);
-    if(reg){await reg.showNotification("تذكير بعادة",{body,tag,icon:"icons/icon-192.png",badge:"icons/icon-192.png",lang:"ar",dir:"rtl"});return}
-  }catch(e){}
+  try{const reg=swReg||(navigator.serviceWorker&&await navigator.serviceWorker.ready);
+    if(reg){await reg.showNotification("تذكير بعادة",{body,tag,icon:"icons/icon-192-v3.png",badge:"icons/icon-192-v3.png",lang:"ar",dir:"rtl"});return}}catch(e){}
   try{new Notification("تذكير بعادة",{body,tag})}catch(e){}
 }
 function checkReminders(){
-  const now=new Date(),tk=keyOf(now),mins=now.getHours()*60+now.getMinutes();
+  const now=new Date(),t=today0(),tk=keyOf(t),mins=now.getHours()*60+now.getMinutes();
   for(const h of state.habits){
-    if(!h.time||!scheduled(h,now)||isDone(h,tk))continue;
-    const [H,M]=h.time.split(":").map(Number),t=H*60+M;
-    const id=tk+h.id;
-    if(mins>=t&&mins-t<=60&&!notified.has(id)){
+    if(!h.time||!scheduled(h,t)||KEPT(lvlAt(h,t)))continue;
+    if(isWeekly(h)&&weekCount(h,weekStart(t))>=h.freq.times)continue;
+    const [H,M]=h.time.split(":").map(Number),tm=H*60+M,id=tk+h.id;
+    if(mins>=tm&&mins-tm<=60&&!notified.has(id)){
       notified.add(id);
-      toast(`${h.icon} حان وقت: ${h.name}`,{label:"أنجزتها",fn:()=>{if(!isDone(h,tk))toggle(h,tk)}});
+      toast(`${h.icon} حان وقت: ${h.name}`,{label:h.type==="check"?"أنجزتها":"سجّل",fn:()=>logAt(h,tk)});
       showNotif(`${h.icon} ${h.name}`,id);
     }
   }
 }
 
-/* ---------- backup ---------- */
+/* ================= backup ================= */
 $("backupBtn").onclick=()=>{
-  const data=JSON.stringify(state,null,2),name=`habits-backup-${keyOf(new Date())}.json`;
+  const data=JSON.stringify(state,null,2),name=`adati-backup-${keyOf(today0())}.json`;
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:"application/json"}));a.download=name;
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
 };
@@ -363,14 +640,13 @@ $("importBtn").onclick=()=>$("importFile").click();
 $("importFile").onchange=async e=>{
   const f=e.target.files[0];e.target.value="";if(!f)return;
   try{
-    const d=JSON.parse(await f.text());
-    if(!Array.isArray(d.habits)||typeof d.log!=="object")throw 0;
+    const m=migrate(JSON.parse(await f.text()));if(!m)throw 0;
     if(state.habits.length&&!confirm("ستُستبدل عاداتك الحالية بمحتوى النسخة. متابعة؟"))return;
-    state={habits:d.habits,log:d.log||{}};persist();render();toast(`استُعيدت ${nf.format(state.habits.length)} عادة`);
-  }catch(err){toast("الملف ليس نسخة احتياطية صالحة من عاداتي")}
+    state=m;persist();render();toast(`استُعيدت ${nf.format(state.habits.length)} عادة`);
+  }catch(err){toast("الملف ليس نسخة احتياطية صالحة")}
 };
 
-/* ---------- install ---------- */
+/* ================= install & sw ================= */
 let deferredPrompt=null;
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBtn").hidden=false});
 $("installBtn").onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$("installBtn").hidden=true};
@@ -379,11 +655,12 @@ if("serviceWorker" in navigator){
   window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").then(r=>{swReg=r}).catch(()=>{}));
 }
 
-/* ---------- start ---------- */
-buildChips();updateNotifBtn();render();
+/* ================= start ================= */
+buildForm();updateNotifBtn();render();
+if(migratedNotice)setTimeout(()=>toast("حُدّث التطبيق ونُقل سجلّك. أضف العادات الجديدة من «عادات جاهزة»",{label:"افتح",fn:openPresets}),600);
 checkReminders();setInterval(checkReminders,30000);
-let lastDay=keyOf(new Date());
-setInterval(()=>{const k=keyOf(new Date());if(k!==lastDay){lastDay=k;render()}},60000);
+let lastDay=keyOf(today0());
+setInterval(()=>{const k=keyOf(today0());if(k!==lastDay){lastDay=k;render()}},60000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){render();checkReminders()}});
 </script>
 </body>
