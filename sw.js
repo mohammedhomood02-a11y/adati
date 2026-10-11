@@ -1,4 +1,4 @@
-const VERSION = "adati-v3";
+const VERSION = "adati-v4";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192-v3.png", "icons/icon-512-v3.png", "icons/apple-touch-icon-v3.png"];
 
 self.addEventListener("install", e => {

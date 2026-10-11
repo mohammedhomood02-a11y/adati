@@ -127,6 +127,18 @@ legend{font-weight:500;margin-bottom:8px;padding:0}
 .toast{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-160%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;max-width:calc(100% - 24px);transition:transform .3s;z-index:10;display:flex;gap:12px;align-items:center}
 .toast.show{transform:translate(-50%,0)}
 .toast button{background:var(--bg);color:var(--ink);border:none;border-radius:8px;padding:4px 12px;cursor:pointer;font-weight:600}
+.sess{border:1px solid var(--c);color:var(--c);background:none;border-radius:99px;padding:0 10px;font-size:.8rem;cursor:pointer;line-height:1.9}
+.sess.live{background:var(--c);color:var(--surface)}
+#sessBar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ink);color:var(--bg);border-radius:16px;padding:14px 16px;margin:0 0 18px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+#sessBar .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+#sessBar .time{font-family:"Reem Kufi",Tahoma,sans-serif;font-size:2.1rem;line-height:1;font-variant-numeric:tabular-nums;direction:ltr}
+#sessBar .bar{background:rgba(255,255,255,.18);margin:10px 0}
+#sessBar .bar i{background:var(--amber)}
+#sessBar .acts{display:flex;gap:8px;flex-wrap:wrap}
+#sessBar button{background:var(--bg);color:var(--ink);border:none;border-radius:10px;padding:6px 14px;cursor:pointer;font-weight:600;font-size:.88rem}
+#sessBar button.alt{background:transparent;color:var(--bg);border:1px solid rgba(255,255,255,.35)}
+.toggle{display:flex;gap:10px;align-items:flex-start;font-weight:500;cursor:pointer}
+.toggle input{width:20px;height:20px;margin-top:3px;accent-color:var(--ink);flex:none}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -140,6 +152,15 @@ legend{font-weight:500;margin-bottom:8px;padding:0}
     </div>
     <div class="score" id="score" hidden><b id="scoreNum"></b><span>نتيجة اليوم</span></div>
   </header>
+  <div id="sessBar" hidden role="timer" aria-live="off">
+    <div class="top"><span id="sbName"></span><span class="time" id="sbTime">00:00</span></div>
+    <div class="bar"><i id="sbProg" style="width:0%"></i></div>
+    <div class="acts">
+      <button type="button" id="sbEnd">إنهاء وتسجيل ما أنجزته</button>
+      <button type="button" class="alt" id="sbFocus">تشغيل وضع التركيز</button>
+      <button type="button" class="alt" id="sbCancel">إلغاء الجلسة</button>
+    </div>
+  </div>
   <div class="areas" id="areas" aria-label="نسب المجالات اليوم"></div>
   <main id="list"></main>
   <div class="tools">
@@ -222,6 +243,25 @@ legend{font-weight:500;margin-bottom:8px;padding:0}
         <button class="ghost" type="button" data-close>إلغاء</button>
         <button class="primary" type="submit">حفظ</button>
       </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- Focus session -->
+<dialog id="sessDlg">
+  <form id="sessForm">
+    <h3>جلسة تركيز</h3>
+    <p class="sub" id="sHabit"></p>
+    <fieldset><legend>المدة</legend>
+      <div class="chips" id="durChips"></div>
+    </fieldset>
+    <label class="f">أو مدة أخرى بالدقائق<input type="text" name="custom" inputmode="numeric" placeholder="مثال: 40"></label>
+    <label class="toggle"><input type="checkbox" name="useSc"><span>تشغيل وضع التركيز في iPhone عبر الاختصار<br><small class="hint">يحتاج إعداد الاختصار مرة واحدة</small></span></label>
+    <label class="f" id="scWrap">اسم الاختصار<input type="text" name="scName" maxlength="40"></label>
+    <p class="hint">تُضاف دقائق الجلسة تلقائياً إلى العادة عند انتهائها. إذا أنهيتها مبكراً تُسجَّل الدقائق التي عملتها فعلاً.</p>
+    <div class="row">
+      <button class="ghost" type="button" data-close>إلغاء</button>
+      <button class="primary" type="submit">ابدأ</button>
     </div>
   </form>
 </dialog>
@@ -427,12 +467,14 @@ function row(h,t,tk){
     if(!scheduled(h,d)&&bv==null)beads+=`<span class="bead off" title="${esc(lbl)}"></span>`;
     else beads+=`<button type="button" class="bead lv-${bl}${i===0?" today":""}" data-k="${k}" aria-label="${esc(lbl)}" title="${esc(lbl)}"></button>`;
   }
+  const live=session&&session.hid===h.id;
+  const sb=isFocusable(h)&&on?`<button type="button" class="sess${live?" live":""}">${live?"جلسة جارية":"▶ جلسة"}</button>`:"";
   const wk=isWeekly(h)?`<span>هذا الأسبوع ${nf.format(weekCount(h,weekStart(t)))} من ${nf.format(h.freq.times)}</span>`:"";
   el.innerHTML=`
     <button type="button" class="check lv-${lv}" ${on?"":"disabled"} aria-label="${h.type==="check"?(v?"إلغاء إنجاز":"إنجاز"):"تسجيل"} ${esc(h.name)}">${h.icon||"•"}</button>
     <p class="name">${esc(h.name)}</p>
     <button type="button" class="edit" aria-label="تعديل ${esc(h.name)}">⋯</button>
-    <div class="val">${h.type!=="check"?`<span>${valueText(h,v)}</span>`:""}${LVL_NAME[lv]?`<span class="badge ${lv}">${LVL_NAME[lv]}</span>`:""}${wk}${on?"":"<span class='badge'>ليست اليوم</span>"}</div>
+    <div class="val">${h.type!=="check"?`<span>${valueText(h,v)}</span>`:""}${LVL_NAME[lv]?`<span class="badge ${lv}">${LVL_NAME[lv]}</span>`:""}${wk}${sb}${on?"":"<span class='badge'>ليست اليوم</span>"}</div>
     <div class="meta">
       ${h.time?`<span>⏰ ${fmtTime(h.time)}</span>`:""}
       <span>الحالية ${nf.format(r.cur)} ${unitW}</span>
@@ -442,6 +484,7 @@ function row(h,t,tk){
     <div class="beads">${beads}</div>`;
   el.querySelector(".check").onclick=()=>{if(on)logAt(h,tk)};
   el.querySelector(".edit").onclick=()=>openEdit(h);
+  const sbtn=el.querySelector(".sess");if(sbtn)sbtn.onclick=()=>live?window.scrollTo({top:0,behavior:"smooth"}):openSession(h);
   el.querySelectorAll("button.bead").forEach(b=>b.onclick=()=>logAt(h,b.dataset.k));
   return el;
 }
@@ -560,6 +603,7 @@ $("form").addEventListener("submit",e=>{
 $("delBtn").onclick=()=>{
   if(!editing||!confirm(`حذف «${editing.name}» وكل سجلّها؟`))return;
   const id=editing.id;state.habits=state.habits.filter(h=>h.id!==id);
+  if(session&&session.hid===id)clearSession();
   for(const k of Object.keys(state.log)){delete state.log[k][id];if(!Object.keys(state.log[k]).length)delete state.log[k]}
   $("dlg").close();persist();render();toast("حُذفت العادة");
 };
@@ -588,6 +632,78 @@ $("presetForm").addEventListener("submit",e=>{
   $("presets").close();persist();render();
   if(idx.length)toast(`أُضيفت ${nf.format(idx.length)} عادة`);
 });
+
+/* ================= focus sessions ================= */
+const LS_SESS="adati-session",LS_PREF="adati-prefs";
+const isFocusable=h=>h.type==="amount"&&/دقيق/.test(h.unit||"");
+let prefs={useSc:false,scName:"عاداتي تركيز",dur:50};
+try{Object.assign(prefs,JSON.parse(localStorage.getItem(LS_PREF)||"{}"))}catch(e){}
+let session=null;
+try{session=JSON.parse(localStorage.getItem(LS_SESS)||"null")}catch(e){}
+const savePrefs=()=>{try{localStorage.setItem(LS_PREF,JSON.stringify(prefs))}catch(e){}};
+const saveSession=()=>{try{session?localStorage.setItem(LS_SESS,JSON.stringify(session)):localStorage.removeItem(LS_SESS)}catch(e){}};
+function clearSession(){session=null;saveSession();updSessBar()}
+let sH=null;
+function openSession(h){
+  sH=h;const f=$("sessForm");f.reset();
+  $("sHabit").textContent=`${h.icon} ${h.name}`;
+  const opts=[25,50,60,90];if(!opts.includes(prefs.dur))prefs.dur=50;
+  $("durChips").innerHTML=opts.map(m=>`<label><input type="radio" name="dur" value="${m}" ${m===prefs.dur?"checked":""}><span>${nf.format(m)} د</span></label>`).join("");
+  f.useSc.checked=!!prefs.useSc;f.scName.value=prefs.scName;
+  $("scWrap").hidden=!prefs.useSc;f.useSc.onchange=()=>$("scWrap").hidden=!f.useSc.checked;
+  $("sessDlg").showModal();
+}
+function runShortcut(min){
+  const url=`shortcuts://run-shortcut?name=${encodeURIComponent(prefs.scName)}&input=text&text=${encodeURIComponent(String(min))}`;
+  window.location.href=url;
+}
+$("sessForm").addEventListener("submit",e=>{
+  e.preventDefault();const f=e.target;
+  let dur=toNum(f.custom.value);
+  if(dur==null)dur=+f.querySelector("[name=dur]:checked").value;
+  else{dur=Math.round(dur);if(!(dur>=1&&dur<=600)){toast("المدة بين ١ و٦٠٠ دقيقة");return}}
+  if(session&&!confirm("توجد جلسة جارية. إنهاؤها وبدء جلسة جديدة؟"))return;
+  if(session)finishSession(false);
+  prefs.useSc=f.useSc.checked;prefs.scName=f.scName.value.trim()||"عاداتي تركيز";
+  if([25,50,60,90].includes(dur))prefs.dur=dur;savePrefs();
+  session={hid:sH.id,start:Date.now(),dur,day:keyOf(today0())};saveSession();
+  $("sessDlg").close();render();updSessBar();window.scrollTo({top:0,behavior:"smooth"});
+  if(prefs.useSc){toast("بعد تشغيل الاختصار ارجع إلى عاداتي");setTimeout(()=>runShortcut(dur),350)}
+  else toast(`بدأت جلسة ${nf.format(dur)} دقيقة`);
+});
+function finishSession(full){
+  if(!session)return;
+  const h=state.habits.find(x=>x.id===session.hid);
+  const el=Math.floor((Date.now()-session.start)/60000);
+  const mins=full?session.dur:Math.min(el,session.dur);
+  const day=session.day;clearSession();
+  if(!h)return;
+  if(mins>0){
+    setVal(h,day,Math.round(((val(h,day)||0)+mins)*100)/100);
+    const lv=LVL_NAME[level(h,val(h,day))];
+    toast(`سُجّلت ${nf.format(mins)} دقيقة في «${h.name}»${lv?" — "+lv:""}`);
+    if(full)showNotif(`انتهت الجلسة ✓ ${h.icon} ${h.name}: ${mins} دقيقة`,"sess"+day+h.id);
+  }else toast("لم تُسجَّل دقائق لأن الجلسة أقل من دقيقة");
+  render();
+}
+function updSessBar(){
+  const bar=$("sessBar");
+  if(!session){bar.hidden=true;document.title="عاداتي";return}
+  const h=state.habits.find(x=>x.id===session.hid);
+  if(!h){clearSession();return}
+  const total=session.dur*60000,left=Math.max(0,total-(Date.now()-session.start));
+  if(left<=0){finishSession(true);return}
+  const s=Math.ceil(left/1000),mm=Math.floor(s/60),ss=s%60;
+  const txt=`${pad(mm)}:${pad(ss)}`;
+  bar.hidden=false;$("sbName").textContent=`${h.icon} ${h.name} · ${nf.format(session.dur)} دقيقة`;
+  $("sbTime").textContent=txt;$("sbProg").style.width=`${(1-left/total)*100}%`;
+  $("sbFocus").hidden=!prefs.useSc;
+  document.title=`${txt} · عاداتي`;
+}
+$("sbEnd").onclick=()=>finishSession(false);
+$("sbCancel").onclick=()=>{if(confirm("إلغاء الجلسة دون تسجيل أي دقائق؟")){clearSession();render();toast("أُلغيت الجلسة")}};
+$("sbFocus").onclick=()=>{if(!session)return;const left=Math.max(1,Math.ceil((session.dur*60000-(Date.now()-session.start))/60000));runShortcut(left)};
+setInterval(()=>{if(session)updSessBar()},1000);
 
 /* ================= toast ================= */
 let tTimer;
@@ -656,12 +772,12 @@ if("serviceWorker" in navigator){
 }
 
 /* ================= start ================= */
-buildForm();updateNotifBtn();render();
+buildForm();updateNotifBtn();render();updSessBar();
 if(migratedNotice)setTimeout(()=>toast("حُدّث التطبيق ونُقل سجلّك. أضف العادات الجديدة من «عادات جاهزة»",{label:"افتح",fn:openPresets}),600);
 checkReminders();setInterval(checkReminders,30000);
 let lastDay=keyOf(today0());
 setInterval(()=>{const k=keyOf(today0());if(k!==lastDay){lastDay=k;render()}},60000);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden){render();checkReminders()}});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){updSessBar();render();checkReminders()}});
 </script>
 </body>
 </html>
